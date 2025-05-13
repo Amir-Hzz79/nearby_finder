@@ -1,5 +1,9 @@
 import 'package:get_it/get_it.dart';
 
-final GetIt locator = GetIt.instance;
+import '../services/location_service.dart';
 
-void setupLocator() {}
+final GetIt getIt = GetIt.instance;
+
+void setupLocator() {
+  getIt.registerLazySingleton<LocationService>(() => LocationService());
+}
