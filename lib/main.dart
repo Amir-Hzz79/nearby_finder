@@ -3,9 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nearby_finder/core/theme/app_theme.dart';
 import 'package:nearby_finder/view/home/home_screen.dart';
 
+import 'core/get_it.dart';
 import 'core/theme/theme_provider.dart';
 
 void main() {
+  setupLocator();
+  
   runApp(const ProviderScope(child: NearbyFinderApp()));
 }
 
