@@ -1,3 +1,5 @@
+import 'location.dart';
+
 class Place {
   final String id;
   final String name;
@@ -5,8 +7,7 @@ class Place {
   final String categoryName;
   final String categoryIconUrl;
   final String address;
-  final double latitude;
-  final double longitude;
+  final Location location;
   final String status;
 
   Place({
@@ -16,8 +17,7 @@ class Place {
     required this.categoryName,
     required this.categoryIconUrl,
     required this.address,
-    required this.latitude,
-    required this.longitude,
+    required this.location,
     required this.status,
   });
 
@@ -40,8 +40,10 @@ class Place {
       categoryName: category?['name'] ?? 'Unknown',
       categoryIconUrl: iconUrl,
       address: location['formatted_address'] ?? 'No address',
-      latitude: geocodes['latitude']?.toDouble() ?? 0.0,
-      longitude: geocodes['longitude']?.toDouble() ?? 0.0,
+      location: Location(
+        latitude: geocodes['latitude']?.toDouble() ?? 0.0,
+        longitude: geocodes['longitude']?.toDouble() ?? 0.0,
+      ),
       status: json['closed_bucket'] ?? 'Unknown',
     );
   }

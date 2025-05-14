@@ -66,17 +66,7 @@ class LocationService {
 
       final List<dynamic> results = data['results'];
 
-      return results
-          .map((item) => Place.fromJson(item))
-          .where(
-            (place) =>
-                place.name.isNotEmpty &&
-                place.latitude != 0 &&
-                place.longitude != 0,
-          )
-          .toList();
-    } on DioException catch (e) {
-      return [];
+      return results.map((item) => Place.fromJson(item)).toList();
     } catch (e) {
       return [];
     }
