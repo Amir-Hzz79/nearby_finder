@@ -1,6 +1,7 @@
+import '../data/database/database.dart';
 import 'location.dart';
 
-class Place {
+class PlaceModel {
   final String id;
   final String name;
   final int distance;
@@ -10,7 +11,7 @@ class Place {
   final Location location;
   final String status;
 
-  Place({
+  PlaceModel({
     required this.id,
     required this.name,
     required this.distance,
@@ -21,7 +22,7 @@ class Place {
     required this.status,
   });
 
-  factory Place.fromJson(Map<String, dynamic> json) {
+  factory PlaceModel.fromJson(Map<String, dynamic> json) {
     final category =
         json['categories']?.isNotEmpty == true ? json['categories'][0] : null;
 
@@ -33,7 +34,7 @@ class Place {
     final location = json['location'] ?? {};
     final geocodes = json['geocodes']?['main'] ?? {};
 
-    return Place(
+    return PlaceModel(
       id: json['fsq_id'] ?? '',
       name: json['name'] ?? '',
       distance: json['distance'] ?? 0,
@@ -45,6 +46,22 @@ class Place {
         longitude: geocodes['longitude']?.toDouble() ?? 0.0,
       ),
       status: json['closed_bucket'] ?? 'Unknown',
+    );
+  }
+
+  factory PlaceModel.fromEntity(PlacesTableData entity) {
+    return PlaceModel(
+      id: entity.id,
+      name: entity.name,
+      distance: entity.distance,
+      categoryName: entity.categoryName,
+      categoryIconUrl: entity.categoryIconUrl,
+      address: entity.address,
+      location: Location(
+        latitude: entity.latitude,
+        longitude: entity.longitude,
+      ),
+      status: entity.status,
     );
   }
 }

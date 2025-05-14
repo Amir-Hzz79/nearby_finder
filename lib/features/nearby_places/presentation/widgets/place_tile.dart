@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:nearby_finder/features/nearby_places/presentation/widgets/place_details.dart';
 
-import '../../../../core/models/place.dart';
+import '../../../../core/models/place_model.dart';
 
 class PlaceTile extends StatelessWidget {
   const PlaceTile({super.key, required this.place, this.onTap});
 
-  final Place place;
+  final PlaceModel place;
   final void Function()? onTap;
 
   @override

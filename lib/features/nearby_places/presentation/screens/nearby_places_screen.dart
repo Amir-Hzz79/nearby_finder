@@ -9,7 +9,7 @@ import 'package:nearby_finder/features/nearby_places/presentation/widgets/place_
 import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../../core/theme/theme_provider.dart';
-import '../../../../core/models/place.dart';
+import '../../../../core/models/place_model.dart';
 import '../../../../core/services/location_service.dart';
 import '../../application/places_provider.dart';
 import '../widgets/map_view.dart';
@@ -23,7 +23,7 @@ class NearbyPlacesScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<NearbyPlacesScreen> {
   final LocationService locationService = getIt<LocationService>();
-  List<Place> nearbyPlaces = [];
+  List<PlaceModel> nearbyPlaces = [];
   double selectedRadius = 500;
   final MapController _mapController = MapController();
 
@@ -179,7 +179,7 @@ class _HomeScreenState extends ConsumerState<NearbyPlacesScreen> {
                     snapshot.data ??
                     List.generate(
                       5,
-                      (index) => Place(
+                      (index) => PlaceModel(
                         id: '$index',
                         name: 'place holder',
                         distance: 100,

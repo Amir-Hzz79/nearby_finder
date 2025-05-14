@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:nearby_finder/core/models/location.dart';
 
-import '../models/place.dart';
+import '../models/place_model.dart';
 
 class LocationService {
   final Dio _dio;
@@ -42,7 +42,7 @@ class LocationService {
     return Location.fromPosition(currentLocation);
   }
 
-  Future<List<Place>> getNearbyPlaces({
+  Future<List<PlaceModel>> getNearbyPlaces({
     required Location currentLocation,
     int radius = 1000,
   }) async {
@@ -66,7 +66,7 @@ class LocationService {
 
       final List<dynamic> results = data['results'];
       print(results[0]['distance']);
-      return results.map((item) => Place.fromJson(item)).toList();
+      return results.map((item) => PlaceModel.fromJson(item)).toList();
     } catch (e) {
       return [];
     }

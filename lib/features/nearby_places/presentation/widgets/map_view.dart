@@ -4,13 +4,13 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:nearby_finder/core/models/location.dart';
 
-import '../../../../core/models/place.dart';
+import '../../../../core/models/place_model.dart';
 import 'place_details.dart';
 
 class MapView extends StatefulWidget {
   final MapController? controller;
   final Location? currentLocation;
-  final List<Place> places;
+  final List<PlaceModel> places;
   final double radius;
 
   const MapView({

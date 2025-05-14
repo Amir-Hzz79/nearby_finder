@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:nearby_finder/core/models/place.dart';
+import 'package:nearby_finder/core/models/place_model.dart';
 import 'package:nearby_finder/features/nearby_places/presentation/widgets/detail_tile.dart';
 
 class PlaceDetails extends StatelessWidget {
   const PlaceDetails({super.key, required this.place});
 
-  final Place place;
+  final PlaceModel place;
 
   @override
   Widget build(BuildContext context) {

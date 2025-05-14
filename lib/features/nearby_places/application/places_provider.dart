@@ -4,7 +4,7 @@ import 'package:nearby_finder/core/view_models/user_locations.dart';
 import '../../../core/get_it.dart';
 
 import '../../../core/models/location.dart';
-import '../../../core/models/place.dart';
+import '../../../core/models/place_model.dart';
 import '../../../core/services/location_service.dart';
 
 final placesProvider = StateNotifierProvider<PlacesNotifier, UserLocations>(
@@ -37,15 +37,16 @@ class PlacesNotifier extends StateNotifier<UserLocations> {
     return Future.value(userLocations);
   }
 
-  Future<List<Place>> fetchNearbyPlaces(
+  Future<List<PlaceModel>> fetchNearbyPlaces(
     Location currentLocation,
     int nearbyRadius,
   ) {
     final LocationService locationService = getIt<LocationService>();
-    final Future<List<Place>> nearbyPlaces = locationService.getNearbyPlaces(
-      currentLocation: currentLocation,
-      radius: nearbyRadius,
-    );
+    final Future<List<PlaceModel>> nearbyPlaces = locationService
+        .getNearbyPlaces(
+          currentLocation: currentLocation,
+          radius: nearbyRadius,
+        );
 
     setPlaces(
       UserLocations(
