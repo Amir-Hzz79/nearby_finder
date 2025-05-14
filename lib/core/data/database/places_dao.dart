@@ -1,6 +1,5 @@
 import 'package:drift/drift.dart';
 
-import '../../models/location.dart';
 import '../../models/place_model.dart';
 import 'database.dart';
 import 'place_table.dart';
@@ -11,9 +10,24 @@ part 'places_dao.g.dart';
 class PlacesDao extends DatabaseAccessor<PlacesDatabase> with _$PlacesDaoMixin {
   PlacesDao(super.db);
 
-  Future<void> insertPlaces(List<PlacesTableCompanion> places) async {
+  Future<void> insertPlaces(List<PlaceModel> places) async {
     await batch((batch) {
-      batch.insertAllOnConflictUpdate(placesTable, places);
+      batch.insertAllOnConflictUpdate(
+        placesTable,
+        places.map((place) {
+          return PlacesTableCompanion.insert(
+            id: place.id,
+            name: place.name,
+            categoryName: place.categoryName,
+            categoryIconUrl: place.categoryIconUrl,
+            status: place.status,
+            latitude: place.location.latitude,
+            longitude: place.location.longitude,
+            address: place.address,
+            distance: place.distance,
+          );
+        }).toList(),
+      );
     });
   }
 

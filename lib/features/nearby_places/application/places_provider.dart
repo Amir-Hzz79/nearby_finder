@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nearby_finder/core/data/database/places_dao.dart';
 import 'package:nearby_finder/core/view_models/user_locations.dart';
 
 import '../../../core/get_it.dart';
@@ -18,16 +19,22 @@ class PlacesNotifier extends StateNotifier<UserLocations> {
 
   Future<UserLocations> fetchLocations(int nearbyRadius) {
     final LocationService locationService = getIt<LocationService>();
-
+    final PlacesDao placesDao = getIt<PlacesDao>();
     final UserLocations userLocations = UserLocations();
 
     userLocations.currentLocation = locationService.getCurrentLocation().then((
       currentLocation,
     ) {
-      userLocations.nearbyPlaces = locationService.getNearbyPlaces(
-        currentLocation: currentLocation!,
-        radius: nearbyRadius,
-      );
+      userLocations.nearbyPlaces = locationService
+          .getNearbyPlaces(
+            currentLocation: currentLocation!,
+            radius: nearbyRadius,
+          )
+          .then((places) {
+            placesDao.insertPlaces(places);
+
+            return places;
+          });
 
       setPlaces(userLocations);
 
