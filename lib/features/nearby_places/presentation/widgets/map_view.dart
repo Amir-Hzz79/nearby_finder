@@ -3,19 +3,24 @@ import 'package:flutter_map/flutter_map.dart';
 
 import 'package:latlong2/latlong.dart';
 
+import '../../../../core/models/place.dart';
+
 class MapView extends StatelessWidget {
+  final MapController? controller;
   final LatLng initialLocation;
-  final List<LatLng> locations;
+  final List<Place> places;
 
   const MapView({
     super.key,
     required this.initialLocation,
-    this.locations = const [],
+    this.places = const [],
+    this.controller,
   });
 
   @override
   Widget build(BuildContext context) {
     return FlutterMap(
+      mapController: controller,
       options: MapOptions(
         interactionOptions: const InteractionOptions(),
         initialCenter: initialLocation,
@@ -28,6 +33,7 @@ class MapView extends StatelessWidget {
         MarkerLayer(
           markers: [
             Marker(
+              rotate: true,
               width: 40.0,
               height: 40.0,
               point: LatLng(
@@ -40,15 +46,28 @@ class MapView extends StatelessWidget {
                 size: 40,
               ),
             ),
-            ...locations.map(
-              (e) => Marker(
+            ...places.map(
+              (place) => Marker(
+                rotate: true,
                 width: 40.0,
                 height: 40.0,
-                point: LatLng(e.latitude, e.longitude),
-                child: const Icon(
-                  Icons.location_pin,
-                  color: Colors.blue,
-                  size: 40,
+                point: place.location.toLatLng(),
+                child: Image.network(
+                  place.categoryIconUrl,
+                  errorBuilder:
+                      (context, error, stackTrace) => const Icon(
+                        Icons.location_pin,
+                        color: Colors.black87,
+                        size: 40,
+                      ),
+
+                  /* loadingBuilder:
+                      (context, error, stackTrace) => const Icon(
+                        Icons.location_pin,
+                        color: Colors.black87,
+                        size: 40,
+                      ), */
+                  color: Colors.black87,
                 ),
               ),
             ),

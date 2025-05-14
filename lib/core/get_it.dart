@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 
-import '../services/location_service.dart';
+import 'services/location_service.dart';
 
 final GetIt getIt = GetIt.instance;
 

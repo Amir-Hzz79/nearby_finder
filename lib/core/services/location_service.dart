@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:nearby_finder/models/location.dart';
+import 'package:nearby_finder/core/models/location.dart';
 
 import '../models/place.dart';
 

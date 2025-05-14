@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nearby_finder/core/theme/app_theme.dart';
-import 'package:nearby_finder/view/home/home_screen.dart';
+import 'package:nearby_finder/features/nearby_places/presentation/screens/nearby_places_screen.dart';
 
 import 'core/get_it.dart';
 import 'core/theme/theme_provider.dart';
@@ -24,7 +24,7 @@ class NearbyFinderApp extends ConsumerWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: themeMode,
-      home: const HomeScreen(),
+      home: const NearbyPlacesScreen(),
     );
   }
 }

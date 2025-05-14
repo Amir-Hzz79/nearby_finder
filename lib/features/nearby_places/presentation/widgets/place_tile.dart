@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:nearby_finder/view/widgets/detail_tile.dart';
+import 'package:nearby_finder/features/nearby_places/presentation/widgets/detail_tile.dart';
 
-import '../../models/place.dart';
+import '../../../../core/models/place.dart';
 
 class PlaceTile extends StatelessWidget {
-  const PlaceTile({super.key, required this.place});
+  const PlaceTile({super.key, required this.place, this.onTap});
 
   final Place place;
+  final void Function()? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +43,7 @@ class PlaceTile extends StatelessWidget {
                           child: Text('Ok'),
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 32),
                     ],
                   ),
                 ),
@@ -53,11 +54,14 @@ class PlaceTile extends StatelessWidget {
       child: ListTile(
         leading: Image.network(
           place.categoryIconUrl,
+          errorBuilder:
+              (context, error, stackTrace) =>
+                  Icon(Icons.location_city_rounded, size: 40),
           color: Theme.of(context).colorScheme.onSurface,
         ),
-        title: Text(place.name),
+        title: Text('${place.name} (${place.distance}m)'),
         subtitle: Text(place.categoryName),
-        trailing: Text('${place.distance}m'),
+        trailing: TextButton(onPressed: onTap, child: Text('Show on map')),
       ),
     );
   }
