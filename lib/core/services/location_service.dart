@@ -65,7 +65,7 @@ class LocationService {
       }
 
       final List<dynamic> results = data['results'];
-
+      print(results[0]['distance']);
       return results.map((item) => Place.fromJson(item)).toList();
     } catch (e) {
       return [];

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nearby_finder/features/nearby_places/presentation/widgets/detail_tile.dart';
+import 'package:nearby_finder/features/nearby_places/presentation/widgets/place_details.dart';
 
 import '../../../../core/models/place.dart';
 
@@ -18,35 +18,7 @@ class PlaceTile extends StatelessWidget {
             showDragHandle: true,
             enableDrag: true,
             builder:
-                (context) => IntrinsicHeight(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      DetailTile(title: 'Name', value: Text(place.name)),
-                      DetailTile(
-                        title: 'Category',
-                        value: Text(place.categoryName),
-                      ),
-                      DetailTile(title: 'Address', value: Text(place.address)),
-                      DetailTile(title: 'Status', value: Text(place.status)),
-                      DetailTile(
-                        title: 'Distance',
-                        value: Text('${place.distance}m'),
-                      ),
-                      const SizedBox(height: 16),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: FilledButton.tonal(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: Text('Ok'),
-                        ),
-                      ),
-                      const SizedBox(height: 32),
-                    ],
-                  ),
-                ),
+                (context) => IntrinsicHeight(child: PlaceDetails(place: place)),
             isScrollControlled: true,
           ),
         );
@@ -61,7 +33,7 @@ class PlaceTile extends StatelessWidget {
         ),
         title: Text('${place.name} (${place.distance}m)'),
         subtitle: Text(place.categoryName),
-        trailing: TextButton(onPressed: onTap, child: Text('Show on map')),
+        /* trailing: TextButton(onPressed: onTap, child: Text('Show')), */
       ),
     );
   }
