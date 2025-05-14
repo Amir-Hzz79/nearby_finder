@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:geolocator/geolocator.dart';
+
 import 'package:latlong2/latlong.dart';
 import 'package:nearby_finder/core/get_it.dart';
+import 'package:nearby_finder/models/location.dart';
+import 'package:nearby_finder/view/widgets/place_tile.dart';
 
 import '../../core/theme/theme_provider.dart';
+import '../../models/place.dart';
 import '../../services/location_service.dart';
 import '../widgets/map_view.dart';
 
@@ -16,7 +19,9 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
-  late Future<Position?> _futureCurrentPosition;
+  final LocationService locationService = getIt<LocationService>();
+  late Future<Location?> _futureCurrentPosition;
+  Future<List<Place>>? nearbyPlaces;
   @override
   void initState() {
     super.initState();
@@ -24,10 +29,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Future<void> _fetchUserLocation() async {
-    final locationService = getIt<LocationService>();
-
     try {
       _futureCurrentPosition = locationService.getCurrentLocation();
+    } catch (e) {
+      debugPrint('Error fetching location: $e');
+    }
+  }
+
+  Future<void> _fetchNearbyPlaces(Location currentLocation) async {
+    try {
+      nearbyPlaces = locationService.getNearbyPlaces(
+        currentLocation: currentLocation,
+      );
       /* if (position != null) {
         ref.read(userLocationProvider.notifier).state = LatLng(
           position.latitude,
@@ -58,37 +71,69 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ],
         ),
-        body: Column(
-          children: [
-            FutureBuilder(
-              future: _futureCurrentPosition,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return const Center(child: Text('Error fetching location'));
-                } else if (!snapshot.hasData || snapshot.data == null) {
-                  return const Center(
-                    child: Text('No location data available'),
-                  );
-                }
+        body: FutureBuilder(
+          future: _futureCurrentPosition,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return const Center(child: Text('Error fetching location'));
+            } else if (!snapshot.hasData || snapshot.data == null) {
+              return const Center(child: Text('No location data available'));
+            }
 
-                final position = snapshot.data!;
+            final currentLocation = snapshot.data!;
 
-                return SizedBox(
-                  width: double.infinity,
-                  height: 500,
-                  child: MapView(
-                    initialLocation: LatLng(
-                      position.latitude,
-                      position.longitude,
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  SizedBox(
+                    width: double.infinity,
+                    height: 500,
+                    child: MapView(
+                      initialLocation: LatLng(
+                        currentLocation.latitude,
+                        currentLocation.longitude,
+                      ),
+                      locations: [],
                     ),
-                    locations: [],
                   ),
-                );
-              },
-            ),
-          ],
+                  TextButton.icon(
+                    onPressed: () {
+                      _fetchNearbyPlaces(currentLocation);
+                    },
+                    icon: Icon(Icons.search),
+                    label: Text('Find Nearby Places'),
+                  ),
+
+                  FutureBuilder(
+                    future: nearbyPlaces,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else if (snapshot.hasError) {
+                        return const Center(
+                          child: Text('Error fetching locations'),
+                        );
+                      } else if (!snapshot.hasData || snapshot.data == null) {
+                        return const SizedBox();
+                      }
+
+                      final List<Place> places = snapshot.data!;
+
+                      return ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: places.length,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemBuilder:
+                            (context, index) => PlaceTile(place: places[index]),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            );
+          },
         ),
       ),
     );

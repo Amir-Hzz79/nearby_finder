@@ -1,7 +1,17 @@
+import 'package:dio/dio.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:nearby_finder/models/location.dart';
+
+import '../models/place.dart';
 
 class LocationService {
-  Future<Position?> getCurrentLocation() async {
+  final Dio _dio;
+  final String _baseUrl = 'https://api.foursquare.com/v3/places/search';
+  final String _apiKey = 'fsq3tRB2+I/ih9iDaD1uDMNv4a9rDTqZGO1Id1+4tu/ewMk=';
+
+  LocationService(this._dio);
+
+  Future<Location?> getCurrentLocation() async {
     bool serviceEnabled;
     LocationPermission permission;
 
@@ -25,8 +35,50 @@ class LocationService {
     }
 
     // Get current position
-    return await Geolocator.getCurrentPosition(
+    final Position currentLocation = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high,
     );
+
+    return Location.fromPosition(currentLocation);
+  }
+
+  Future<List<Place>> getNearbyPlaces({
+    required Location currentLocation,
+    int radius = 1000,
+  }) async {
+    try {
+      final response = await _dio.get(
+        _baseUrl,
+        queryParameters: {
+          'll': '${currentLocation.latitude},${currentLocation.longitude}',
+          'radius': radius,
+        },
+        options: Options(
+          headers: {'Authorization': _apiKey, 'accept': 'application/json'},
+        ),
+      );
+
+      final data = response.data;
+
+      if (data == null || data['results'] == null) {
+        throw Exception('No results found');
+      }
+
+      final List<dynamic> results = data['results'];
+
+      return results
+          .map((item) => Place.fromJson(item))
+          .where(
+            (place) =>
+                place.name.isNotEmpty &&
+                place.latitude != 0 &&
+                place.longitude != 0,
+          )
+          .toList();
+    } on DioException catch (e) {
+      return [];
+    } catch (e) {
+      return [];
+    }
   }
 }
