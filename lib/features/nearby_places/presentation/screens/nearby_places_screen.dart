@@ -1,9 +1,12 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:nearby_finder/core/get_it.dart';
 import 'package:nearby_finder/core/models/location.dart';
+import 'package:nearby_finder/core/models/location_exception.dart';
+import 'package:nearby_finder/core/utils/extentions/conectivity_extentions.dart';
 import 'package:nearby_finder/core/view_models/user_locations.dart';
 import 'package:nearby_finder/features/nearby_places/presentation/widgets/place_tile.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -27,15 +30,129 @@ class _HomeScreenState extends ConsumerState<NearbyPlacesScreen> {
   double selectedRadius = 500;
   final MapController _mapController = MapController();
 
+  void fetchLocations() {
+    try {
+      ref.read(placesProvider.notifier).fetchLocations(selectedRadius.toInt());
+    } on LocationException catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message)));
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Unkonwn Error')));
+    }
+  }
+
+  bool isOnline = true;
+  late Stream<List<ConnectivityResult>> connectivityStream;
+
   @override
   void initState() {
     super.initState();
+
+    connectivityStream = Connectivity().onConnectivityChanged;
+    connectivityStream.listen((List<ConnectivityResult> results) {
+      setState(() {
+        isOnline = results.hasInternetConnection();
+        if (isOnline) {
+          fetchLocations();
+        }
+      });
+    });
+
+    fetchLocations();
   }
 
   @override
   void dispose() {
     _mapController.dispose();
     super.dispose();
+  }
+
+  Widget _buildConnctStatusIcon() {
+    if (isOnline) {
+      return IconButton(
+        icon: Icon(
+          Icons.wifi_rounded,
+          color: Theme.of(context).colorScheme.secondary,
+        ),
+        onPressed: () {
+          Navigator.of(context).push(
+            ModalBottomSheetRoute(
+              showDragHandle: true,
+              enableDrag: true,
+              builder:
+                  (context) => IntrinsicHeight(
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Column(
+                          children: [
+                            Icon(
+                              Icons.wifi_rounded,
+                              color: Theme.of(context).colorScheme.secondary,
+                              size: 64,
+                            ),
+                            const SizedBox(height: 20),
+                            Text(
+                              'Internet connection avaiable.',
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                            const SizedBox(height: 20),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+              isScrollControlled: true,
+            ),
+          );
+        },
+      );
+    } else {
+      return IconButton(
+        icon: Icon(
+          Icons.signal_wifi_statusbar_connected_no_internet_4_rounded,
+          color: Theme.of(context).colorScheme.error,
+        ),
+        onPressed: () {
+          Navigator.of(context).push(
+            ModalBottomSheetRoute(
+              showDragHandle: true,
+              enableDrag: true,
+              builder:
+                  (context) => IntrinsicHeight(
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Column(
+                          children: [
+                            Icon(
+                              Icons
+                                  .signal_wifi_statusbar_connected_no_internet_4_rounded,
+                              color: Theme.of(context).colorScheme.error,
+                              size: 64,
+                            ),
+                            const SizedBox(height: 20),
+                            Text(
+                              'There in no internet connection. Please check your connection. Data may not be up to date.',
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                            const SizedBox(height: 20),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+              isScrollControlled: true,
+            ),
+          );
+        },
+      );
+    }
   }
 
   @override
@@ -46,6 +163,7 @@ class _HomeScreenState extends ConsumerState<NearbyPlacesScreen> {
       appBar: AppBar(
         title: const Text('Home Page'),
         actions: [
+          _buildConnctStatusIcon(),
           IconButton(
             icon: Icon(
               ref.watch(themeModeProvider) == ThemeMode.dark
@@ -136,8 +254,8 @@ class _HomeScreenState extends ConsumerState<NearbyPlacesScreen> {
             FutureBuilder(
               future: userLocations.currentLocation,
               builder: (context, snapshot) {
-                final currentLocation =
-                    snapshot.data /* ?? Location(latitude: 0, longitude: 0) */;
+                /* final currentLocation =
+                    snapshot.data ?? Location(latitude: 0, longitude: 0); */
 
                 return Skeletonizer(
                   enabled:

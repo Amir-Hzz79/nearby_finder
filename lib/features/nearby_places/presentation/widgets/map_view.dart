@@ -46,7 +46,6 @@ class _MapViewState extends State<MapView> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.currentLocation);
     return FlutterMap(
       mapController: mapController,
       options:
@@ -85,20 +84,62 @@ class _MapViewState extends State<MapView> {
                   widget.currentLocation!.latitude,
                   widget.currentLocation!.longitude,
                 ),
-                child: Icon(
-                  Icons.location_pin,
-                  color: Theme.of(context).colorScheme.secondary,
-                  size: 40,
+                child: IconButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      ModalBottomSheetRoute(
+                        showDragHandle: true,
+                        enableDrag: true,
+                        builder:
+                            (context) => IntrinsicHeight(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  const SizedBox(height: 10),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    spacing: 5,
+                                    children: [
+                                      Icon(
+                                        Icons.location_pin,
+                                        color:
+                                            Theme.of(
+                                              context,
+                                            ).colorScheme.secondary,
+                                        size: 48,
+                                      ),
+                                      Text(
+                                        'That\'s you!',
+                                        style:
+                                            Theme.of(
+                                              context,
+                                            ).textTheme.displaySmall,
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 30),
+                                ],
+                              ),
+                            ),
+                        isScrollControlled: true,
+                      ),
+                    );
+                  },
+                  icon: Icon(
+                    Icons.location_pin,
+                    color: Theme.of(context).colorScheme.secondary,
+                    size: 40,
+                  ),
                 ),
               ),
             ...widget.places.map(
               (place) => Marker(
                 rotate: true,
-                width: 32.0,
-                height: 32.0,
+                width: 48,
+                height: 48,
                 point: place.location.toLatLng(),
-                child: InkWell(
-                  onTap: () {
+                child: IconButton(
+                  onPressed: () {
                     Navigator.of(context).push(
                       ModalBottomSheetRoute(
                         showDragHandle: true,
@@ -111,18 +152,14 @@ class _MapViewState extends State<MapView> {
                       ),
                     );
                   },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.grey.withOpacity(0.4),
-                    ),
+                  icon: Center(
                     child: Image.network(
                       place.categoryIconUrl,
                       errorBuilder:
                           (context, error, stackTrace) => const Icon(
                             Icons.location_pin,
                             color: Colors.black87,
-                            size: 40,
+                            size: 32,
                           ),
 
                       color: Colors.black87,

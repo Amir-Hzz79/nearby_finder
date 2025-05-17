@@ -13,9 +13,7 @@ final placesProvider = StateNotifierProvider<PlacesNotifier, UserLocations>(
 );
 
 class PlacesNotifier extends StateNotifier<UserLocations> {
-  PlacesNotifier() : super(UserLocations(nearbyPlaces: Future.value([]))) {
-    fetchLocations(500);
-  }
+  PlacesNotifier() : super(UserLocations(nearbyPlaces: Future.value([])));
 
   Future<UserLocations> fetchLocations(int nearbyRadius) {
     final LocationService locationService = getIt<LocationService>();
@@ -27,7 +25,7 @@ class PlacesNotifier extends StateNotifier<UserLocations> {
     ) {
       userLocations.nearbyPlaces = locationService
           .getNearbyPlaces(
-            currentLocation: currentLocation!,
+            currentLocation: currentLocation,
             radius: nearbyRadius,
           )
           .then((places) {
