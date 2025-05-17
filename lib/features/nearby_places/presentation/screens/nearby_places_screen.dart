@@ -229,8 +229,8 @@ class _HomeScreenState extends ConsumerState<NearbyPlacesScreen> {
                   child: Slider(
                     value: selectedRadius,
                     min: 100,
-                    max: 2000,
-                    divisions: 20,
+                    max: 5000,
+                    divisions: 10,
                     label: '${selectedRadius}m',
                     onChanged: (value) {
                       setState(() {
@@ -289,6 +289,19 @@ class _HomeScreenState extends ConsumerState<NearbyPlacesScreen> {
               },
             ),
 
+            const SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: TextFormField(
+                decoration: InputDecoration(
+                  hintText: 'Search',
+                  suffixIcon: Icon(Icons.search_rounded),
+                ),
+                onChanged: (value) {
+                  ref.read(placesProvider.notifier).search(value);
+                },
+              ),
+            ),
             const SizedBox(height: 8),
             FutureBuilder(
               future: userLocations.nearbyPlaces,

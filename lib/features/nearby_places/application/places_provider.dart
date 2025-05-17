@@ -63,11 +63,37 @@ class PlacesNotifier extends StateNotifier<UserLocations> {
     return nearbyPlaces;
   }
 
-  void setPlaces(UserLocations newPlaces) {
+  void setPlaces(UserLocations newPlaces) async {
     state = newPlaces;
+    _allPlaces = await newPlaces.nearbyPlaces ?? [];
   }
 
   void clearPlaces() {
     state = UserLocations(nearbyPlaces: Future.value([]));
+  }
+
+  List<PlaceModel> _allPlaces = [];
+  void search(String query) {
+    if (query.isEmpty) {
+      state = UserLocations(
+        currentLocation: state.currentLocation,
+        nearbyPlaces: Future.value(_allPlaces),
+      );
+    } else {
+      final lower = query.toLowerCase();
+      state = UserLocations(
+        currentLocation: state.currentLocation,
+        nearbyPlaces: Future.value(
+          _allPlaces
+              .where(
+                (place) =>
+                    place.name.toLowerCase().contains(lower) ||
+                    place.address.toLowerCase().contains(lower) ||
+                    place.categoryName.toLowerCase().contains(lower),
+              )
+              .toList(),
+        ),
+      );
+    }
   }
 }
